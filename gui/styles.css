@@ -1,12 +1,16 @@
 body {
     font-family: Arial, sans-serif;
     background-color: white;
-    background-image: url('background.jpg');
+    background-image: url('robot.jpg');
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    background-size: cover;         /* Ensure the background covers the whole viewport */
+    background-repeat: no-repeat;
+    
+
 
 
     
