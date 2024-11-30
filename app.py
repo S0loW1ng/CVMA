@@ -5,14 +5,11 @@ from flask import Flask, request, jsonify
 import requests
 import base64
 import re
+from leakcheck import LeakCheckAPI_v2
+
 
 app = Flask(__name__)
 
-# Replace these with your actual Dehashed API email and API key
-DEHASHED_EMAIL = "your_email@example.com"
-DEHASHED_API_KEY = "your_api_key"
-
-DEHASHED_BASE_URL = "https://api.dehashed.com/search"
 
 # Directory to store Sherlock results
 SHERLOCK_RESULTS_DIR = "sherlock_results"
@@ -74,89 +71,33 @@ def query_proxynova(email, start=0, limit=20):
     except requests.exceptions.RequestException as e:
         return {"error": f"Error communicating with ProxyNova API: {str(e)}"}
     
-def query_leakcheck(email,limit,):
-     # Replace these with your actual Dehashed API email and API key
-    DEHASHED_EMAIL = "your_email@example.com"
-    DEHASHED_API_KEY = os.getenv("DEHASHED_KEY")
+def query_leakcheck(email, type):
     
-    if not DEHASHED_API_KEY:
-        raise ValueError("DEHASHED_KEY environment variable not set!")
-
-    DEHASHED_BASE_URL = "https://api.dehashed.com/search"
-
-    # Prepare the query parameters
-    params = {
-        "query": f"{field}:{query}",
-        "limit": limit
-    }
-
-    # Create Basic Auth header
-    auth_header = {
-        "Authorization": "Basic " + base64.b64encode(f"{DEHASHED_EMAIL}:{DEHASHED_API_KEY}".encode()).decode()
-    }
-
-    try:
-        # Make the GET request
-        response = requests.get(DEHASHED_BASE_URL, headers=auth_header, params=params, timeout=10)
-        response.raise_for_status()  # Raise exception for HTTP errors
-        reply = response.json()
-    ##Debugung
-        print("Dehashed request" + requests.Session().url)
-        print(reply)
-        # Return the JSON response
-        return reply
-    except requests.exceptions.RequestException as e:
-        return {"error": f"Error communicating with Dehashed API: {str(e)}"}
-
-''''
-def query_dehashed(query, field="email", limit=20):
-
-    # Replace these with your actual Dehashed API email and API key
-    DEHASHED_EMAIL = "your_email@example.com"
-    DEHASHED_API_KEY = os.getenv("DEHASHED_KEY")
+    api_key = os.getenv("API")
+    if not api_key:
+        raise ValueError("LEAKCHECK_API_KEY environment variable is not set!")
+    api = LeakCheckAPI_v2(api_key)
     
-    if not DEHASHED_API_KEY:
-        raise ValueError("DEHASHED_KEY environment variable not set!")
+    result = api.lookup(query=email, query_type=type, limit=10)
+    print("Printing leakcheck results")
+    print(result)
+    
+    #data = [{'source': {'name': 'lolzteam.net', 'breach_date': '2019-02', 'unverified': 0, 'passwordless': 1, 'compilation': 0}, 'username': 'retr0', 'email': 'rus.nevka@gmail.com', 'fields': ['username', 'email']}, {'password': 'A12345', 'source': {'name': 'DayZ.com', 'breach_date': '2016-03', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'country': 'US', 'ip': '75.141.220.164', 'username': 'Retr0', 'email': 'dope_man_420@hotmail.com', 'fields': ['password', 'country', 'ip', 'username', 'email']}, {'password': '3177389', 'source': {'name': 'WiiHacks.com', 'breach_date': '2013-08', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'ip': '81.103.114.35', 'username': 'retr0', 'email': 'dopey1467@gmail.com', 'fields': ['password', 'ip', 'username', 'email']}, {'password': 'vuth3', 'source': {'name': 'GamerzPlanet.net', 'breach_date': '2015-09', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'ip': '76.23.79.233', 'username': 'retr0', 'email': 'prodigy.zach@gmail.com', 'fields': ['password', 'ip', 'username', 'email']}, {'password': 'Zelda99', 'source': {'name': 'Konduit', 'breach_date': '2020-04', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'username': 'Retr0', 'email': 'jkimball1993@gmail.com', 'fields': ['password', 'username', 'email']}, {'password': 'howella6764', 'source': {'name': 'FFShrine.org', 'breach_date': '2015-09', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'username': 'Retr0', 'email': 'oldzkoolz@yahoo.com', 'fields': ['password', 'username', 'email']}, {'password': 'Mamamia10', 'source': {'name': 'Mpgh.net', 'breach_date': '2015-10', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'ip': '188.22.77.214', 'username': 'ReTr0', 'email': 'christoph.linzner@gmx.at', 'fields': ['password', 'ip', 'username', 'email']}, {'password': 'kentut', 'source': {'name': 'gPotato.com', 'breach_date': '2006-11', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'username': 'retr0', 'email': 'dead_in_head@hotmail.com', 'fields': ['password', 'username', 'email']}, {'password': 'mtvqm7g9', 'source': {'name': 'PESGaming.com', 'breach_date': None, 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'ip': '62.254.64.14', 'username': 'retr0', 'email': 'jones_ufc@hotmail.com', 'fields': ['password', 'ip', 'username', 'email']}, {'password': 'kokelio', 'source': {'name': 'Exvagos.com', 'breach_date': '2022-07', 'unverified': 0, 'passwordless': 0, 'compilation': 0}, 'dob': '1000-01-01', 'username': 'retr0', 'email': 'kokelio@hotmail.com', 'fields': ['password', 'dob', 'username', 'email']}]
+    #data = [{'source': {'name': 'Deezer.com', 'breach_date': '2019-09', 'unverified': 0, 'passwordless': 1, 'compilation': 0}, 'country': 'CA', 'dob': '1986-09-30', 'first_name': 'Mykhailo', 'last_name': 'Samoilenko', 'username': 'Mykhailo..Samoilenko', 'email': 'smykhailo@yahoo.com', 'fields': ['country', 'dob', 'first_name', 'last_name', 'username', 'email']}]
+    return result
 
-    DEHASHED_BASE_URL = "https://api.dehashed.com/search"
-
-    # Prepare the query parameters
-    params = {
-        "query": f"{field}:{query}",
-        "limit": limit
-    }
-
-    # Create Basic Auth header
-    auth_header = {
-        "Authorization": "Basic " + base64.b64encode(f"{DEHASHED_EMAIL}:{DEHASHED_API_KEY}".encode()).decode()
-    }
-
-    try:
-        # Make the GET request
-        response = requests.get(DEHASHED_BASE_URL, headers=auth_header, params=params, timeout=10)
-        response.raise_for_status()  # Raise exception for HTTP errors
-        reply = response.json()
-    ##Debugung
-        print("Dehashed request" + requests.Session().url)
-        print(reply)
-        # Return the JSON response
-        return reply
-    except requests.exceptions.RequestException as e:
-        return {"error": f"Error communicating with Dehashed API: {str(e)}"}
-
-        '''
 
 @app.route('/GetInformation', methods=['POST'])
 def get_information():
     passwordList = []
-    hashesList = []
+    addressList = []
     usernameList = []
     emailList = []
     accountFoundList=[]
 
     data = {
     "passwords": passwordList,
-    "hashes": hashesList,
+    "addresses": addressList,
     "usernames": usernameList,
     "emails": emailList,
     "accounts_found": accountFoundList  
@@ -164,20 +105,34 @@ def get_information():
 
     jsonInput = request.get_json()
     print("Checking usernames")
-    print("skip...")
-    ''''
+    
+
     for username in jsonInput["usernames"]:
-        dehashedResponce = query_dehashed(username, field=username)
-        for entry in dehashedResponce["entries"]:
-                if entry.get("username"):  # Skip if username is empty or null
-                    usernameList.append(entry["username"])
-                if entry.get("password"):  # Skip if password is empty
-                    passwordList.append(entry["password"])
-                if entry.get("hashed_password"):  # Include hashes if present in data
-                    hashesList.append(entry["hashed_password"])
-                if entry.get("email"):
-                    emailList.append(entry["hashed_password"])
-                '''
+        for entry in query_leakcheck(username, "username"):
+            if 'email' in entry and entry['email'] != 'N/A' and entry['email'] not in emailList:
+                emailList.append(entry['email'])
+            if 'password' in entry and entry['password'] != 'N/A' and entry['password'] not in passwordList:
+                passwordList.append(entry['password'])
+            if 'address' in entry and entry['address'] != 'N/A' and entry['address'] not in addressList:
+                addressList.append(entry['address'])
+            if 'username' in entry and entry['username'] != 'N/A' and entry['username'] not in usernameList:
+                usernameList.append(entry['username'])
+
+    print("Checking emails")
+
+    for email in jsonInput["emails"]:
+        for entry in query_leakcheck(email, "email"):
+            if 'email' in entry and entry['email'] != 'N/A' and entry['email'] not in emailList:
+                emailList.append(entry['email'])
+            if 'password' in entry and entry['password'] != 'N/A' and entry['password'] not in passwordList:
+                passwordList.append(entry['password'])
+            if 'address' in entry and entry['address'] != 'N/A' and entry['address'] not in addressList:
+                addressList.append(entry['address'])
+            if 'username' in entry and entry['username'] != 'N/A' and entry['username'] not in usernameList:
+                usernameList.append(entry['username'])
+
+    
+    
     print("Checking Proxynova")    
     for SingleEmail in jsonInput["emails"]:
         proxynovaResponse = query_proxynova(SingleEmail)
@@ -187,7 +142,8 @@ def get_information():
                 passwordList.append(i)
     
     print("Runing sherlock ")
-    accountFoundList.append(run_sherlock(jsonInput["usernames"], "sherlockOutput"))
+    print("skiping sherlock ")
+    #accountFoundList.append(run_sherlock(jsonInput["usernames"], "sherlockOutput"))
     print("Returning data")
     json_joint_data = json.dumps(data, indent=5)
 
