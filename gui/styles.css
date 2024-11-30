@@ -38,8 +38,6 @@ input {
 
 button {
     padding: 100px;
-    
-    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
