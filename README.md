@@ -3,6 +3,7 @@
 ### OPSEC sanitisation tool
 
 This Flask-based application is designed to help users identify and understand their digital footprint by processing user-submitted data, querying external APIs, and generating structured JSON reports. It provides detailed insights into compromised information, such as usernames, emails, passwords, and more. Tailored for OPSEC purposes, this tool empowers users to pinpoint potential data leaks and take proactive steps to remove sensitive information from the internet, ultimately reducing their attack surface and enhancing personal security
+
 ---
 
 ### Features
@@ -99,25 +100,6 @@ pip install -r requirements.txt
    
 3. **Environment Variables**:
    - Ensure the `API` variable is correctly exported; otherwise, API queries will fail.
-
----
-
-### Contributing
-
-1. Fork the repository.
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature-name
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m "Add new feature"
-   ```
-4. Push to the branch:
-   ```bash
-   git push origin feature-name
-   ```
-5. Open a pull request.
 
 ---
 
