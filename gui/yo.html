@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Trimmed JSON</title>
+</head>
+<body>
+    <h1>JSON File Content (Trimmed)</h1>
+    
+    <!-- File input to select the JSON file -->
+    <input type="file" id="fileInput" accept=".json">
+
+    <div id="jsonOutput"></div>
+
+    <script>
+        // Listen for file input selection
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file && file.name.endsWith('.json')) {
+                const reader = new FileReader();
+
+                // Read the file as text
+                reader.readAsText(file);
+
+                reader.onload = function(e) {
+                    // Parse the JSON data
+                    const jsonData = JSON.parse(e.target.result);
+                    let output = "";
+
+                    // Loop through the keys and values, trimming the values
+                    for (const key in jsonData) {
+                        if (jsonData.hasOwnProperty(key)) {
+                            // Trim the value (remove leading/trailing spaces) and display
+                            const trimmedValue = jsonData[key].toString().trim();
+                            output += `<strong>${key}:</strong> ${trimmedValue}<br>`;
+                        }
+                    }
+
+                    // Display the output (keys and trimmed values) in the div
+                    document.getElementById('jsonOutput').innerHTML = output;
+                };
+
+                reader.onerror = function(e) {
+                    alert('Error reading file');
+                };
+            } else {
+                alert('Please select a valid JSON file');
+            }
+        });
+    </script>
+</body>
+</html>
