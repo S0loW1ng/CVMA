@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Results</h1>
+
+    <!-- Passwords Section -->
+    <h2>Passwords</h2>
+    <table>
+        <tr><th>#</th><th>Password</th></tr>
+        {% for password in data.passwords %}
+        <tr><td>{{ loop.index }}</td><td>{{ password }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <!-- Usernames Section -->
+    <h2>Usernames</h2>
+    <table>
+        <tr><th>#</th><th>Username</th></tr>
+        {% for username in data.usernames %}
+        <tr><td>{{ loop.index }}</td><td>{{ username }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <!-- Emails Section -->
+    <h2>Emails</h2>
+    <table>
+        <tr><th>#</th><th>Email</th></tr>
+        {% for email in data.emails %}
+        <tr><td>{{ loop.index }}</td><td>{{ email }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <!-- Addresses Section -->
+    <h2>Addresses</h2>
+    <table>
+        <tr><th>#</th><th>Address</th></tr>
+        {% for address in data.addresses %}
+        <tr><td>{{ loop.index }}</td><td>{{ address }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <!-- Accounts Found Section -->
+    <h2>Accounts Found</h2>
+    <table>
+        <tr><th>#</th><th>Account</th></tr>
+        {% for account_list in data.accounts_found %}
+        {% for account in account_list %}
+        <tr><td>{{ loop.index }}</td><td>{{ account }}</td></tr>
+        {% endfor %}
+        {% endfor %}
+    </table>
+</body>
+</html>

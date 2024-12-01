@@ -29,7 +29,7 @@
 
     <script>
         // Function to handle form submission
-        document.getElementById('myForm').addEventListener('submit', async function(event) {
+        document.getElementById('myForm').addEventListener('submit', async function (event) {
             event.preventDefault(); // Prevent the default form submission
     
             // Get the form data
@@ -60,12 +60,62 @@
                 if (response.ok) {
                     const responseData = await response.json();
     
-                    // Display the response data in a new window
+                    // Open a new window to display the styled response
                     const displayWindow = window.open('', '_blank');
-                    displayWindow.document.write('<html><head><title>Response</title></head><body>');
-                    displayWindow.document.write('<h1>Response Data</h1>');
-                    displayWindow.document.write('<pre>' + JSON.stringify(responseData, null, 2) + '</pre>');
-                    displayWindow.document.write('</body></html>');
+                    displayWindow.document.write(`
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Found</title>
+                            <link rel="stylesheet" href="style2.css">
+                            <style>
+                                body {
+                                    background-color: black;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                    align-items: center;
+                                    margin: 0;
+                                    padding: 20px;
+                                    font-family: Arial, sans-serif;
+                                    color: white;
+                                }
+                                table {
+                                    width: 60%;
+                                    border-collapse: collapse;
+                                    margin-top: 20px;
+                                    background-color: white;
+                                    color: black;
+                                }
+                                th, td {
+                                    padding: 8px;
+                                    text-align: left;
+                                    border: 1px solid #ddd;
+                                }
+                                th {
+                                    background-color: #4CAF50;
+                                    color: white;
+                                }
+                                tr:nth-child(even) {
+                                    background-color: #f2f2f2;
+                                }
+                                h1 {
+                                    color: #4CAF50;
+                                    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <!-- Title -->
+                            <h1>Found</h1>
+                            
+                            <!-- Dynamically generated table -->
+                            ${generateTableHtml(responseData)}
+                        </body>
+                        </html>
+                    `);
                 } else {
                     console.error('Error: Failed to submit data', response.statusText);
                 }
@@ -73,7 +123,42 @@
                 console.error('Error: Unable to send POST request', error);
             }
         });
+    
+        // Function to generate an HTML table from JSON data
+        function generateTableHtml(jsonData) {
+            let html = '<table>';
+            html += '<thead><tr><th>Key</th><th>Value</th></tr></thead>';
+            html += '<tbody>';
+    
+            for (const [key, value] of Object.entries(jsonData)) {
+                html += `<tr><td>${key}</td><td>`;
+                if (Array.isArray(value)) {
+                    html += '<ul>';
+                    value.forEach(item => {
+                        if (Array.isArray(item)) {
+                            html += '<li><ul>';
+                            item.forEach(subItem => {
+                                html += `<li>${subItem}</li>`;
+                            });
+                            html += '</ul></li>';
+                        } else {
+                            html += `<li>${item}</li>`;
+                        }
+                    });
+                    html += '</ul>';
+                } else {
+                    html += value;
+                }
+                html += '</td></tr>';
+            }
+    
+            html += '</tbody></table>';
+            return html;
+        }
     </script>
+    
+    
+    
     
 </body>
 
