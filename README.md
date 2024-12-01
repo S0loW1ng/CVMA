@@ -51,7 +51,7 @@ This Flask-based application is designed to help users identify and understand t
 5. **Access the Application**:
    Open a browser and go to:
    ```
-   http://127.0.0.1:5000
+   http://127.0.0.1:5000/gui/index.html
    ```
 
 ---
