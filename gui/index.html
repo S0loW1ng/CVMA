@@ -6,19 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Form</title>
     <link rel="stylesheet" href="styles.css">
-    
 </head>
 
 <body>
-    
     <div class="form-container">
-        
         <form id="myForm">
             <label for="emails">Emails (separate with commas):</label>
-            <input type="email" id="emails" name="emails_gui" required aria-label="Emails" multiple placeholder="email1@example.com, email2@example.com"><br>
+            <input type="email" id="emails" name="emails" required aria-label="Emails" multiple placeholder="email1@example.com, email2@example.com"><br>
 
             <label for="username">Usernames:</label>
-            <input type="text" id="username" name="username_gui" aria-label="Username" multiple placeholder="username1, username2"><br>
+            <input type="text" id="usernames" name="usernames" aria-label="Username" multiple placeholder="username1, username2"><br>
 
             <label for="firstname">First Name:</label>
             <input type="text" id="firstname" name="firstname" aria-label="First Name"><br>
@@ -26,39 +23,58 @@
             <label for="lastname">Last Name:</label>
             <input type="text" id="lastname" name="lastname" aria-label="Last Name"><br>
 
-            <button type="submit"></button>
+            <button type="submit">Submit</button>
         </form>
     </div>
 
     <script>
         // Function to handle form submission
-        document.getElementById('myForm').addEventListener('submit', function(event) {
+        document.getElementById('myForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the default form submission
-
+    
             // Get the form data
             const formData = new FormData(event.target);
-
+    
             // Create an object to store the form data
             const formObject = {};
-
-            // Populate the object with form data
             formData.forEach((value, key) => {
-                formObject[key] = value;
+                // Check if the key is for fields that should be converted to lists
+                if (key === 'emails' || key === 'usernames') {
+                    formObject[key] = value.split(',').map(item => item.trim()); // Convert to list
+                } else {
+                    formObject[key] = value; // Keep as-is for other fields
+                }
             });
-
-            // Convert the form object to JSON format
-            const jsonData = JSON.stringify(formObject, null, 2);
-
-            // Create a Blob object with the JSON data
-            const blob = new Blob([jsonData], { type: 'application/json' });
-
-            // Create an anchor element to trigger the download
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'data_gui_raw.json';  // File name for the downloaded file
-            a.click();  // Trigger the download
+    
+            try {
+                // Send a POST request to the /GetInformation endpoint
+                const response = await fetch('/GetInformation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formObject)
+                });
+    
+                // Handle the response
+                if (response.ok) {
+                    const responseData = await response.json();
+    
+                    // Display the response data in a new window
+                    const displayWindow = window.open('', '_blank');
+                    displayWindow.document.write('<html><head><title>Response</title></head><body>');
+                    displayWindow.document.write('<h1>Response Data</h1>');
+                    displayWindow.document.write('<pre>' + JSON.stringify(responseData, null, 2) + '</pre>');
+                    displayWindow.document.write('</body></html>');
+                } else {
+                    console.error('Error: Failed to submit data', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error: Unable to send POST request', error);
+            }
         });
     </script>
+    
 </body>
 
 </html>
