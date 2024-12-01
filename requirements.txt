@@ -1,0 +1,4 @@
+Flask==2.x
+requests==2.x
+subprocess==1.x
+leakcheck==1.x
